@@ -21,7 +21,9 @@ public class GravitySubject : MonoBehaviour
 	void Start()
     {
         rb = GetComponent<Rigidbody>();
+        rb.constraints = RigidbodyConstraints.FreezeRotationY;
 
+        //Vector3 initialVelocity = new Vector3(Random.Range(-300f, 300f), 0, Random.Range(-300f, 300f));
         rb.AddForce(initialVelocity, ForceMode.VelocityChange);
     }
 
