@@ -5050,5 +5050,9 @@ PrefabInstance:
       propertyPath: m_Name
       value: Post-process Volume
       objectReference: {fileID: 0}
+    - target: {fileID: 7027433249962435326, guid: 49a7df438e6969f4da8df15c2de660e2, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 49a7df438e6969f4da8df15c2de660e2, type: 3}
