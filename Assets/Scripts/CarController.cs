@@ -1,11 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 public class CarController : MonoBehaviour
 {
     [SerializeField] List<Transform> wheelPos;
+    [SerializeField] List<Transform> visualWheels;
+    [SerializeField] float visualWheelOffset = .2f;
+
     [SerializeField] float tireMass = 1.0f;
 
     [Header("Suspension")]
@@ -63,41 +68,46 @@ public class CarController : MonoBehaviour
         wheelPos[1].localRotation = Quaternion.Euler(90, 0, curAngle);
         wheelPos[3].localRotation = Quaternion.Euler(90, 0, curAngle);
 		
-        Debug.Log(rb.velocity.magnitude);
+        
 	}
-
+    
 	void FixedUpdate()
-    {        
+    {
         for (int i = 0; i < wheelPos.Count; i++)
-        {
-            if (doSuspension)
-                DoSuspension(wheelPos[i]);
-            
-            
+		{
+			RaycastHit hit;
+			bool bruh = Physics.Raycast(wheelPos[i].position, wheelPos[i].forward, out hit, restpoint + suspensionOffset);
+			if (!bruh)
+			    continue;
+
+            visualWheels[i].localPosition = new Vector3(0, 0, hit.distance - visualWheelOffset);
+            Debug.Log(hit.distance);
+
+			if (doSuspension)
+                DoSuspension(wheelPos[i], hit);
+
+            if (doSteering)
+            {
+                if (i % 2 == 0)
+                {
+                    DoSteer(wheelPos[i], backGrip);
+                }
+                else
+                {
+                    DoSteer(wheelPos[i], frontGrip);
+                }
+            }
+
             if (doDrive)
                 DoDrive(wheelPos[i], accelInput);
+
+
         }
-
-        if (doSteering)
-        {
-            DoSteer(wheelPos[0], backGrip);
-			DoSteer(wheelPos[1], frontGrip);
-			DoSteer(wheelPos[2], backGrip);
-			DoSteer(wheelPos[3], frontGrip);
-		}
-		
-
 	}
 
-    void DoSuspension(Transform wheel)
+    void DoSuspension(Transform wheel, RaycastHit hit)
     {
-		RaycastHit hit;
-		bool bruh = Physics.Raycast(wheel.position, wheel.forward, out hit, restpoint + suspensionOffset);
-
-        if (!bruh) 
-        {
-            return;
-        }
+		
 
 		Vector3 wheelVel = rb.GetPointVelocity(wheel.position);
 		Vector3 springDir = wheel.forward;
